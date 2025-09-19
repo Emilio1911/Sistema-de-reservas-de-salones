@@ -600,85 +600,111 @@ class SistemaReservas:
     def run(self):
         self.root.mainloop()
 
-    # ===== Funcionalidad de Búsqueda =====
-    def abrir_ventana_busqueda(self):
-        self.ventana_busqueda = tk.Toplevel(self.root)
-        self.ventana_busqueda.title("Buscar y Filtrar Reservas")
-        self.ventana_busqueda.state('zoomed')
-        self.ventana_busqueda.configure(bg="#2c3e50")
+    # ENCUENTRA ESTA SECCIÓN EN TU CÓDIGO (aproximadamente línea 565-580)
+    # Y REEMPLÁZALA POR ESTE CÓDIGO MEJORADO:
+
+def abrir_ventana_busqueda(self):
+    self.ventana_busqueda = tk.Toplevel(self.root)
+    self.ventana_busqueda.title("Buscar y Filtrar Reservas")
+    self.ventana_busqueda.state('zoomed')
+    self.ventana_busqueda.configure(bg="#2c3e50")
+    
+    busqueda_frame = tk.LabelFrame(self.ventana_busqueda, text="Filtros de Búsqueda", 
+                                   font=("Arial", 12, "bold"), bg="#34495e", fg="white", 
+                                   padx=15, pady=15)
+    busqueda_frame.pack(fill=tk.X, padx=20, pady=10)
+
+    filtro_campos = tk.Frame(busqueda_frame, bg="#34495e")
+    filtro_campos.pack(fill=tk.X)
+
+    tk.Label(filtro_campos, text="ID Reserva:", bg="#34495e", fg="white").pack(side=tk.LEFT, padx=5)
+    self.entry_id = tk.Entry(filtro_campos, width=8, font=("Arial", 11))
+    self.entry_id.pack(side=tk.LEFT, padx=5)
+    self.entry_id.bind('<KeyRelease>', lambda e: self.ejecutar_busqueda())
+    
+    tk.Label(filtro_campos, text="Solicitante:", bg="#34495e", fg="white").pack(side=tk.LEFT, padx=5)
+    self.entry_solicitante = tk.Entry(filtro_campos, width=20, font=("Arial", 11))
+    self.entry_solicitante.pack(side=tk.LEFT, padx=5)
+    self.entry_solicitante.bind('<KeyRelease>', lambda e: self.ejecutar_busqueda())
+
+    tk.Label(filtro_campos, text="Salón:", bg="#34495e", fg="white").pack(side=tk.LEFT, padx=5)
+    self.combo_salon = ttk.Combobox(filtro_campos, values=["", "Polideportivo", "S.U.M."], font=("Arial", 11), width=15)
+    self.combo_salon.pack(side=tk.LEFT, padx=5)
+    self.combo_salon.bind('<<ComboboxSelected>>', lambda e: self.ejecutar_busqueda())
+
+    tk.Label(filtro_campos, text="Fecha:", bg="#34495e", fg="white").pack(side=tk.LEFT, padx=5)
+    self.entry_fecha_busqueda = DateEntry(filtro_campos, width=12, date_pattern='y-mm-dd',
+                                            background='darkblue', foreground='white', borderwidth=2)
+    self.entry_fecha_busqueda.pack(side=tk.LEFT, padx=5)
+    self.entry_fecha_busqueda.bind('<<DateEntrySelected>>', lambda e: self.ejecutar_busqueda())
+
+    self.check_todas_fechas_var = tk.IntVar(value=1)
+    self.check_todas_fechas = tk.Checkbutton(filtro_campos, text="Todas las Fechas", 
+                                             variable=self.check_todas_fechas_var, 
+                                             bg="#34495e", fg="white", selectcolor="#2c3e50",
+                                             command=self.toggle_fecha_busqueda)
+    self.check_todas_fechas.pack(side=tk.LEFT, padx=(10, 5))
+
+    btn_frame_busqueda = tk.Frame(busqueda_frame, bg="#34495e")
+    btn_frame_busqueda.pack(fill=tk.X, pady=10)
+    
+    tk.Button(btn_frame_busqueda, text="Buscar", command=self.ejecutar_busqueda, bg="#03A9F4", fg="white", padx=15).pack(side=tk.LEFT, padx=5)
+    tk.Button(btn_frame_busqueda, text="Limpiar Filtros", command=self.limpiar_filtros_busqueda, bg="#607D8B", fg="white", padx=15).pack(side=tk.LEFT, padx=5)
+
+    tree_frame = tk.Frame(self.ventana_busqueda, bg="#34495e")
+    tree_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=(0, 20))
+
+    columns = ("ID", "Salón", "Fecha", "Hora Inicio", "Hora Fin", "Solicitante")
+
+        # Configuración mejorada del estilo del TreeView
+    style = ttk.Style()
         
-        busqueda_frame = tk.LabelFrame(self.ventana_busqueda, text="Filtros de Búsqueda", 
-                                       font=("Arial", 12, "bold"), bg="#34495e", fg="white", 
-                                       padx=15, pady=15)
-        busqueda_frame.pack(fill=tk.X, padx=20, pady=10)
-
-        filtro_campos = tk.Frame(busqueda_frame, bg="#34495e")
-        filtro_campos.pack(fill=tk.X)
-
-        tk.Label(filtro_campos, text="ID Reserva:", bg="#34495e", fg="white").pack(side=tk.LEFT, padx=5)
-        self.entry_id = tk.Entry(filtro_campos, width=8, font=("Arial", 11))
-        self.entry_id.pack(side=tk.LEFT, padx=5)
-        self.entry_id.bind('<KeyRelease>', lambda e: self.ejecutar_busqueda())
+        # Estilo para el TreeView con colores más suaves para la vista
+    style.configure("ReservasCustom.Treeview",
+                        background="#f5f6fa",      # Fondo gris muy claro (en lugar de blanco)
+                        foreground="#2c3e50",      # Texto azul oscuro
+                        fieldbackground="#f5f6fa", # Fondo de campos gris muy claro
+                        selectbackground="#74b9ff", # Color de selección azul suave
+                        selectforeground="white",   # Texto blanco cuando está seleccionado
+                        font=("Arial", 10))
         
-        tk.Label(filtro_campos, text="Solicitante:", bg="#34495e", fg="white").pack(side=tk.LEFT, padx=5)
-        self.entry_solicitante = tk.Entry(filtro_campos, width=20, font=("Arial", 11))
-        self.entry_solicitante.pack(side=tk.LEFT, padx=5)
-        self.entry_solicitante.bind('<KeyRelease>', lambda e: self.ejecutar_busqueda())
-
-        tk.Label(filtro_campos, text="Salón:", bg="#34495e", fg="white").pack(side=tk.LEFT, padx=5)
-        self.combo_salon = ttk.Combobox(filtro_campos, values=["", "Polideportivo", "S.U.M."], font=("Arial", 11), width=15)
-        self.combo_salon.pack(side=tk.LEFT, padx=5)
-        self.combo_salon.bind('<<ComboboxSelected>>', lambda e: self.ejecutar_busqueda())
-
-        tk.Label(filtro_campos, text="Fecha:", bg="#34495e", fg="white").pack(side=tk.LEFT, padx=5)
-        self.entry_fecha_busqueda = DateEntry(filtro_campos, width=12, date_pattern='y-mm-dd',
-                                                background='darkblue', foreground='white', borderwidth=2)
-        self.entry_fecha_busqueda.pack(side=tk.LEFT, padx=5)
-        self.entry_fecha_busqueda.bind('<<DateEntrySelected>>', lambda e: self.ejecutar_busqueda())
-
-        self.check_todas_fechas_var = tk.IntVar(value=1)
-        self.check_todas_fechas = tk.Checkbutton(filtro_campos, text="Todas las Fechas", 
-                                                 variable=self.check_todas_fechas_var, 
-                                                 bg="#34495e", fg="white", selectcolor="#2c3e50",
-                                                 command=self.toggle_fecha_busqueda)
-        self.check_todas_fechas.pack(side=tk.LEFT, padx=(10, 5))
-
-        btn_frame_busqueda = tk.Frame(busqueda_frame, bg="#34495e")
-        btn_frame_busqueda.pack(fill=tk.X, pady=10)
+        # Estilo para los encabezados (títulos de columnas)
+    style.configure("ReservasCustom.Treeview.Heading",
+                        background="#2c3e50",      # Fondo azul oscuro para encabezados
+                        foreground="white",        # Texto blanco en encabezados
+                        font=("Arial", 11, "bold"))
         
-        tk.Button(btn_frame_busqueda, text="Buscar", command=self.ejecutar_busqueda, bg="#03A9F4", fg="white", padx=15).pack(side=tk.LEFT, padx=5)
-        tk.Button(btn_frame_busqueda, text="Limpiar Filtros", command=self.limpiar_filtros_busqueda, bg="#607D8B", fg="white", padx=15).pack(side=tk.LEFT, padx=5)
+        # Colores alternos para las filas (efecto zebra)
+    style.map('ReservasCustom.Treeview', 
+                  background=[('selected', '#74b9ff'),      # Azul suave cuando seleccionado
+                             ('alternate', '#ecf0f1'),      # Gris muy claro para filas alternas
+                             ('!selected', '#f5f6fa')])     # Gris claro para filas normales
 
-        tree_frame = tk.Frame(self.ventana_busqueda, bg="#34495e")
-        tree_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=(0, 20))
-
-        columns = ("ID", "Salón", "Fecha", "Hora Inicio", "Hora Fin", "Solicitante")
-
-       # Crear estilo
-        style = ttk.Style()
-        style.configure("Custom.Treeview",
-                background="#6ebfca",  # color de fondo de las filas
-                foreground="black",     # color del texto
-                fieldbackground="#f0f0f0")  # color de fondo de la celda
-
-        style.map('Custom.Treeview', background=[('selected', '#347083')])  # color de selección
-
-        columns = ("ID", "Salón", "Fecha", "Hora Inicio", "Hora Fin", "Solicitante")
-        self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings", style="Custom.Treeview")
-        for col in columns:
+        # Crear TreeView con el nuevo estilo
+    self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings", 
+                                style="ReservasCustom.Treeview")
+        
+        # Configurar columnas
+    for col in columns:
             self.tree.heading(col, text=col)
-        if col == "ID":
-            self.tree.column(col, width=70, stretch=False, anchor="center")
-        else:
-            self.tree.column(col, width=100)
-            self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+            if col == "ID":
+                self.tree.column(col, width=70, stretch=False, anchor="center")
+            else:
+                self.tree.column(col, width=150, anchor="center")
+        
+        # Habilitar filas alternas para efecto zebra
+    self.tree.tag_configure('oddrow', background='#ecf0f1')
+    self.tree.tag_configure('evenrow', background='#f5f6fa')
+        
+    self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        tree_scrollbar_y = ttk.Scrollbar(tree_frame, orient="vertical", command=self.tree.yview)
-        tree_scrollbar_y.pack(side="right", fill="y")
-        self.tree.configure(yscrollcommand=tree_scrollbar_y.set)
+    tree_scrollbar_y = ttk.Scrollbar(tree_frame, orient="vertical", command=self.tree.yview)
+    tree_scrollbar_y.pack(side="right", fill="y")
+    self.tree.configure(yscrollcommand=tree_scrollbar_y.set)
 
-        self.tree.bind('<Double-Button-1>', self.on_reserva_double_click)
-        self.ejecutar_busqueda()
+    self.tree.bind('<Double-Button-1>', self.on_reserva_double_click)
+    self.ejecutar_busqueda()
+
 
     def toggle_fecha_busqueda(self):
         if self.check_todas_fechas_var.get() == 1:
@@ -695,37 +721,49 @@ class SistemaReservas:
         self.entry_fecha_busqueda.config(state="disabled")
         self.ejecutar_busqueda()
 
-    def ejecutar_busqueda(self):
-        id_reserva = self.entry_id.get().strip()
-        solicitante = self.entry_solicitante.get().strip()
-        salon = self.combo_salon.get().strip()
-        fecha = self.entry_fecha_busqueda.get().strip() if self.check_todas_fechas_var.get() == 0 else ""
+    # ===== TAMBIÉN NECESITAS MODIFICAR LA FUNCIÓN ejecutar_busqueda =====
+# ENCUENTRA ESTA FUNCIÓN (aproximadamente línea 650-670) Y REEMPLÁZALA:
+
+def ejecutar_busqueda(self):
+    id_reserva = self.entry_id.get().strip()
+    solicitante = self.entry_solicitante.get().strip()
+    salon = self.combo_salon.get().strip()
+    fecha = self.entry_fecha_busqueda.get().strip() if self.check_todas_fechas_var.get() == 0 else ""
+    
+    if id_reserva:
+        resultados = self.db.search_reservas(id_reserva=id_reserva)
+    else:
+        resultados = self.db.search_reservas(solicitante=solicitante, salon=salon, fecha=fecha)
+    
+    # Limpiar el TreeView
+    self.tree.delete(*self.tree.get_children())
+    
+    # Insertar resultados con efecto zebra (filas alternas)
+    for i, row in enumerate(resultados):
+        reserva_id, salon, fecha, hora_inicio, hora_fin, solicitante, _, _, _, _ = row
+        fecha_dt = datetime.strptime(fecha, '%Y-%m-%d')
         
-        if id_reserva:
-            resultados = self.db.search_reservas(id_reserva=id_reserva)
-        else:
-            resultados = self.db.search_reservas(solicitante=solicitante, salon=salon, fecha=fecha)
-        
-        self.tree.delete(*self.tree.get_children())
-        for row in resultados:
-            reserva_id, salon, fecha, hora_inicio, hora_fin, solicitante, _, _, _, _ = row
-            fecha_dt = datetime.strptime(fecha, '%Y-%m-%d')
-            fecha_formateada = fecha_dt.strftime('%A - %d-%m-%y')  # Ej: "Wednesday - 19-09-25"
-            # Si querés el día en español:
-            dias = {
-             "Monday": "Lunes",
-             "Tuesday": "Martes",
-             "Wednesday": "Miércoles",
-             "Thursday": "Jueves",
-             "Friday": "Viernes",
-             "Saturday": "Sábado",
-             "Sunday": "Domingo"
-         }
+        # Traducir días al español
+        dias = {
+            "Monday": "Lunes",
+            "Tuesday": "Martes", 
+            "Wednesday": "Miércoles",
+            "Thursday": "Jueves",
+            "Friday": "Viernes",
+            "Saturday": "Sábado",
+            "Sunday": "Domingo"
+        }
         dia_es = dias[fecha_dt.strftime("%A")]
         fecha_formateada = f"{dia_es} - {fecha_dt.strftime('%d-%m-%y')}"
-    
-        self.tree.insert("", "end", values=(reserva_id, salon, fecha_formateada, hora_inicio, hora_fin, solicitante), iid=reserva_id)
-
+        
+        # Alternar colores de filas para efecto zebra
+        tag = 'evenrow' if i % 2 == 0 else 'oddrow'
+        
+        tag = 'evenrow' if i % 2 == 0 else 'oddrow'
+        
+        self.tree.insert("", "end", 
+                        values=(reserva_id, salon, fecha_formateada, hora_inicio, hora_fin, solicitante),
+                        iid=reserva_id, tags=(tag,))
     def on_reserva_double_click(self, event):
         item_id = self.tree.focus()
         if not item_id:
