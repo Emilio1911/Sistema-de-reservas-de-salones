@@ -653,7 +653,17 @@ class SistemaReservas:
         tree_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=(0, 20))
 
         columns = ("ID", "Salón", "Fecha", "Hora Inicio", "Hora Fin", "Solicitante")
-        self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings")
+        # Cambiar estilo del Treeview
+        style = ttk.Style()
+        style.configure("Custom.Treeview",
+                background="#f0f0f0",      # gris claro
+                fieldbackground="#f0f0f0", # fondo del área
+                foreground="black")        # texto negro
+        style.configure("Custom.Treeview.Heading",
+                background="#d9d9d9",      # encabezado gris más oscuro
+                foreground="black")
+
+        self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings", style="Custom.Treeview")
         for col in columns:
             self.tree.heading(col, text=col)
             if col == "ID":
@@ -698,8 +708,22 @@ class SistemaReservas:
         self.tree.delete(*self.tree.get_children())
         for row in resultados:
             reserva_id, salon, fecha, hora_inicio, hora_fin, solicitante, _, _, _, _ = row
-            fecha_formateada = datetime.strptime(fecha, '%Y-%m-%d').strftime('%d-%m-%y')
-            self.tree.insert("", "end", values=(reserva_id, salon, fecha_formateada, hora_inicio, hora_fin, solicitante), iid=reserva_id)
+            fecha_dt = datetime.strptime(fecha, '%Y-%m-%d')
+            fecha_formateada = fecha_dt.strftime('%A - %d-%m-%y')  # Ej: "Wednesday - 19-09-25"
+            # Si querés el día en español:
+            dias = {
+             "Monday": "Lunes",
+             "Tuesday": "Martes",
+             "Wednesday": "Miércoles",
+             "Thursday": "Jueves",
+             "Friday": "Viernes",
+             "Saturday": "Sábado",
+             "Sunday": "Domingo"
+         }
+        dia_es = dias[fecha_dt.strftime("%A")]
+        fecha_formateada = f"{dia_es} - {fecha_dt.strftime('%d-%m-%y')}"
+    
+        self.tree.insert("", "end", values=(reserva_id, salon, fecha_formateada, hora_inicio, hora_fin, solicitante), iid=reserva_id)
 
     def on_reserva_double_click(self, event):
         item_id = self.tree.focus()
