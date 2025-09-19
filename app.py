@@ -653,25 +653,30 @@ class SistemaReservas:
         tree_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=(0, 20))
 
         columns = ("ID", "Salón", "Fecha", "Hora Inicio", "Hora Fin", "Solicitante")
-        # Cambiar estilo del Treeview
+
+       # Cambiar estilo del Treeview
         style = ttk.Style()
         style.configure("Custom.Treeview",
-                background="#f0f0f0",      # gris claro
-                fieldbackground="#f0f0f0", # fondo del área
+                background="#f0f0f0",      # gris claro para filas
+                fieldbackground="#f0f0f0", # fondo general
                 foreground="black")        # texto negro
         style.configure("Custom.Treeview.Heading",
                 background="#d9d9d9",      # encabezado gris más oscuro
                 foreground="black")
 
         self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings", style="Custom.Treeview")
+
         for col in columns:
             self.tree.heading(col, text=col)
             if col == "ID":
-                 self.tree.column(col, width=70, stretch=False, anchor="center")  # más angosto y autoajustable   
-            else:
-                self.tree.column(col, width=100, stretch=True)
-            self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        
+                self.tree.column(col, width=70, minwidth=70, stretch=False, anchor="center")
+            elif col == "Fecha":
+                self.tree.column(col, width=150, stretch=True)
+        else:
+            self.tree.column(col, width=100, stretch=True)
+
+        self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
         tree_scrollbar_y = ttk.Scrollbar(tree_frame, orient="vertical", command=self.tree.yview)
         tree_scrollbar_y.pack(side="right", fill="y")
         self.tree.configure(yscrollcommand=tree_scrollbar_y.set)
