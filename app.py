@@ -656,8 +656,11 @@ class SistemaReservas:
         self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings")
         for col in columns:
             self.tree.heading(col, text=col)
-            self.tree.column(col, width=100)
-        self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+            if col == "ID":
+                 self.tree.column(col, width=70, stretch=False, anchor="center")  # más angosto y autoajustable   
+            else:
+                self.tree.column(col, width=100, stretch=True)
+            self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         
         tree_scrollbar_y = ttk.Scrollbar(tree_frame, orient="vertical", command=self.tree.yview)
         tree_scrollbar_y.pack(side="right", fill="y")
@@ -871,4 +874,5 @@ class ReservasPeriodicasWindow:
 
 if __name__ == "__main__":
     app = SistemaReservas()
+
     app.run()
